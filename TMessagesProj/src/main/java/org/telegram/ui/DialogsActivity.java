@@ -19,9 +19,11 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -38,8 +40,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Vibrator;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Property;
 import android.util.StateSet;
 import android.view.Gravity;
@@ -90,9 +94,11 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
+import org.telegram.ui.VoiceControl.SpeechService;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.VoiceRecorder;
 import org.telegram.messenger.XiaomiUtilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
@@ -162,9 +168,14 @@ import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.Components.StickersAlert;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.Components.ViewPagerFixed;
+import org.telegram.ui.VoiceControl.ChangeRecognized;
+import org.telegram.ui.VoiceControl.SpeechParser;
 import org.webrtc.RecyclerItemsEnterAnimator;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static android.content.Context.BIND_AUTO_CREATE;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -403,6 +414,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private float tabsYOffset;
     private float scrollAdditionalOffset;
 
+    /**
+    * RecognizedText
+     */
+    private String recognizedText;
+
+    public String getRecognizedText() {
+        return recognizedText;
+    }
+
+    public void setRecognizedText(String text) {
+        recognizedText = text;
+    }
     public final Property<DialogsActivity, Float> SCROLL_Y = new AnimationProperties.FloatProperty<DialogsActivity>("animationValue") {
         @Override
         public void setValue(DialogsActivity object, float value) {
@@ -1607,9 +1630,159 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         super(args);
     }
 
+    /*
+    * Speech recognition service
+    * */
+    private ChangeRecognized changeRecognized = new ChangeRecognized();
+
+    private static final String TAG = DialogsActivity.class.getName();
+    public static boolean chooseContact = true;
+
+    private final AtomicBoolean speechToVoiceActive = new AtomicBoolean(true);
+    private SpeechService mSpeechService;
+
+    private VoiceRecorder mVoiceRecorder;
+    private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
+        @Override
+        public void onVoiceStart() {
+            if (mSpeechService != null) {
+                System.out.println("TEST 2 on Voice start");
+                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
+            }
+        }
+
+        @Override
+        public void onVoice(byte[] data, int size) {
+            if (mSpeechService != null) {
+                mSpeechService.recognize(data, size);  // [SPEECH_TO_TEXT] recognized:
+            }
+        }
+
+        @Override
+        public void onVoiceEnd() {
+            if (mSpeechService != null) {
+                mSpeechService.finishRecognizing(); //FINISH RECOGNISING: TEST 13
+            }
+        }
+    };
+
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mSpeechService = SpeechService.from(binder);
+            mSpeechService.addListener(mSpeechServiceListener);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mSpeechService = null;
+        }
+
+    };
+
+    private void enableSpeechRecognizer() {
+        Log.d(TAG, "[SPEECH_TO_TEXT] initializing.");
+        // Prepare Cloud Speech API
+        getParentActivity().bindService(new Intent(getParentActivity(), SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    private void disableSpeechRecognizer() {
+        Log.d(TAG, "[SPEECH_TO_TEXT] Stopping.");
+        // Stop Cloud Speech API
+        mSpeechService.removeListener(mSpeechServiceListener);
+        getParentActivity().unbindService(mServiceConnection);
+        mSpeechService = null;
+    }
+
+    private void startVoiceRecorder() {
+        Log.d(TAG, "[SPEECH] startVoiceRecorder.");
+        if (mVoiceRecorder != null) {
+            mVoiceRecorder.stop();
+        }
+        mVoiceRecorder = new VoiceRecorder(mVoiceCallback);
+        mVoiceRecorder.start();
+    }
+
+    private void stopVoiceRecorder() {
+        Log.d(TAG, "[SPEECH] stopVoiceRecorder");
+        if (mVoiceRecorder != null) {
+            mVoiceRecorder.stop();
+            mVoiceRecorder = null;
+        }
+    }
+
+    private SpeechParser speechParser = new SpeechParser();
+
+    private final SpeechService.Listener mSpeechServiceListener = new SpeechService.Listener() {
+        @Override
+        public void onSpeechRecognized(final String text, final boolean isFinal) {
+            if(text != null && isFinal) {
+                Log.d(TAG, "[SPEECH_TO_TEXT] recognized: " + text + ", final: " + isFinal);
+                setRecognizedText(text);
+                changeRecognized.setSpeechText(text);
+            }
+
+//            if (isFinal && mVoiceRecorder != null) {
+//                mVoiceRecorder.dismiss(); //API completed.
+//            }
+//            if (!TextUtils.isEmpty(text)) {
+//                runOnUiThread(() -> {
+//                    textBox.setText(text);
+//                    if (text != null) {
+//                        String backgroundColor = speechParser.parseCommands(text);
+//                        textBox.setBackgroundColor(Color.parseColor(backgroundColor));
+//                    }
+//
+//                });
+//            }
+        }
+    };
+
+    private String[] getDialogsNameList(RecyclerListView.Adapter adapter) {
+        String dialogNames[] = new String[5];
+        if (adapter instanceof DialogsAdapter) {
+            DialogsAdapter dialogsAdapter = (DialogsAdapter) adapter;
+            int num = dialogsAdapter.getDialogsCount();
+            for(int pos = 0; pos < num; pos++) {
+                TLObject object = dialogsAdapter.getItem(pos);
+                if (object instanceof TLRPC.Dialog) {
+                    TLRPC.Dialog dialog = (TLRPC.Dialog) object;
+                    TLRPC.User user = getMessagesController().getUser((int) dialog.id);
+                    dialogNames[pos] = user.first_name;
+                    System.out.println(user.first_name);
+                }
+            }
+        }
+        return dialogNames;
+    }
+
+    public int min(int x, int y, int z)
+    {
+        if (x <= y && x <= z)
+            return x;
+        if (y <= x && y <= z)
+            return y;
+        else
+            return z;
+    }
+    public int editDist(String str1, String str2, int m, int n) {
+        if (m == 0)
+            return n;
+        if (n == 0)
+            return m;
+        if (str1.charAt(m - 1) == str2.charAt(n - 1))
+            return editDist(str1, str2, m - 1, n - 1);
+
+        return 1 + min(editDist(str1, str2, m, n - 1),
+                            editDist(str1, str2, m - 1, n),
+                            editDist(str1, str2, m - 1, n - 1));
+    }
+
+
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
+        System.out.println("On fragment create");
 
         if (getArguments() != null) {
             onlySelect = arguments.getBoolean("onlySelect", false);
@@ -2551,10 +2724,59 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             };
             viewPage.layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
             viewPage.listView.setLayoutManager(viewPage.layoutManager);
+            System.out.println("Step 1");
             viewPage.listView.setVerticalScrollbarPosition(LocaleController.isRTL ? RecyclerListView.SCROLLBAR_POSITION_LEFT : RecyclerListView.SCROLLBAR_POSITION_RIGHT);
             viewPage.addView(viewPage.listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            System.out.println("Step 2");
+
+            //set the listener
+            changeRecognized.setListener(new ChangeRecognized.ChangeListener() {
+                @Override
+                public void onChange() {
+                    Log.d(TAG, "on Speech text change");
+                    String text = changeRecognized.getSpeechText();
+                    System.out.println("Change speech text recognized: " + text);
+
+                    // complete opening dialog
+                    if (text.equals("okay") || text.equals("ok")) {
+                        chooseContact = false;
+                        System.out.println("Choose contact: false");
+                    } else {
+                        if(chooseContact) {
+                            String[] nameList = getDialogsNameList(viewPage.dialogsAdapter);
+                            int minEditDist = 100;
+                            int pos = 0;
+                            for (int i = 0; i < nameList.length; i++) {
+                                if (nameList[i] != null) {
+                                    int editDist = DialogsActivity.this.editDist(nameList[i], text, nameList[i].length(), text.length());
+                                    if (editDist <= minEditDist) {
+                                        minEditDist = editDist;
+                                        pos = i;
+                                    }
+                                }
+                            }
+                            View v = DialogsActivity.this.viewPages[0].layoutManager.findViewByPosition(pos);
+                            final int finalPos = pos;
+                            getParentActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Stuff that updates the UI
+                                    onItemClick(v, finalPos, viewPage.dialogsAdapter);
+                                }
+                            });
+                        }
+                    }
+
+                }
+            });
+
             viewPage.listView.setOnItemClickListener((view, position) -> {
+                System.out.println("Step Click");
+
+                View test = DialogsActivity.this.viewPages[0].layoutManager.findViewByPosition(position);
+
                 if (initialDialogsType == 10) {
                     onItemLongClick(view, position, 0, 0, viewPage.dialogsType, viewPage.dialogsAdapter);
                     return;
@@ -2595,6 +2817,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
                 onItemClick(view, position, viewPage.dialogsAdapter);
             });
+
+
+
             viewPage.listView.setOnItemLongClickListener(new RecyclerListView.OnItemLongClickListenerExtended() {
                 @Override
                 public boolean onItemClick(View view, int position, float x, float y) {
@@ -2760,6 +2985,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (a != 0) {
                 viewPages[a].setVisibility(View.GONE);
             }
+            System.out.println("Step 3");
         }
 
         int type = 0;
@@ -3652,6 +3878,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "on Resume");
+        enableSpeechRecognizer(); // [SPEECH_TO_TEXT] initializing
+        startVoiceRecorder(); // [SPEECH] startVoiceRecorder | TEST 1 Start recording audio.
+
         if (!parentLayout.isInPreviewMode() && blurredView != null && blurredView.getVisibility() == View.VISIBLE) {
             blurredView.setVisibility(View.GONE);
             blurredView.setBackground(null);
@@ -3792,6 +4022,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     @Override
     public void onPause() {
         super.onPause();
+
+        // stop record
+        stopVoiceRecorder();
+        disableSpeechRecognizer();
+
         if (scrimPopupWindow != null) {
             scrimPopupWindow.dismiss();
         }
@@ -4304,6 +4539,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void onItemClick(View view, int position, RecyclerListView.Adapter adapter) {
+
         if (getParentActivity() == null) {
             return;
         }
@@ -4312,10 +4548,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         boolean isGlobalSearch = false;
         if (adapter instanceof DialogsAdapter) {
             DialogsAdapter dialogsAdapter = (DialogsAdapter) adapter;
+//            int n = dialogsAdapter.getDialogsCount();
             TLObject object = dialogsAdapter.getItem(position);
             if (object instanceof TLRPC.User) {
                 dialogId = ((TLRPC.User) object).id;
-            } else if (object instanceof TLRPC.Dialog) {
+            }
+            else if (object instanceof TLRPC.Dialog) {
                 TLRPC.Dialog dialog = (TLRPC.Dialog) object;
                 if (dialog instanceof TLRPC.TL_dialogFolder) {
                     if (actionBar.isActionModeShowed()) {
@@ -4366,7 +4604,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 return;
             }
-        } else if (adapter == searchViewPager.dialogsSearchAdapter) {
+        }
+        else if (adapter == searchViewPager.dialogsSearchAdapter) {
             Object obj = searchViewPager.dialogsSearchAdapter.getItem(position);
             isGlobalSearch = searchViewPager.dialogsSearchAdapter.isGlobalSearch(position);
             if (obj instanceof TLRPC.User) {
@@ -4482,6 +4721,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
         }
     }
+
+
+
+
+
+
+
+
 
     private boolean onItemLongClick(View view, int position, float x, float y, int dialogsType, RecyclerListView.Adapter adapter) {
         if (getParentActivity() == null) {

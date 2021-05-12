@@ -4050,7 +4050,7 @@ public class Theme {
         currentColors = new HashMap<>();
 
         SharedPreferences themeConfig = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE);
-
+//night
         ThemeInfo themeInfo = new ThemeInfo();
         themeInfo.name = "Blue";
         themeInfo.assetName = "bluebubbles.attheme";
@@ -4071,8 +4071,11 @@ public class Theme {
                 new int[]    {          0,                            180,                            45,                             0,                            45,                           180,                             0,          0,          0,          0,          0,          0,          0,          0,          0,          0 },
                 new int[]    {          0,                             52,                            46,                            57,                            45,                            64,                            52,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
                 );
-        themes.add(currentDayTheme = currentTheme = defaultTheme = themeInfo);
-        themesDict.put("Blue", themeInfo);
+        themes.add(themeInfo);
+        themesDict.put("Blue", currentDayTheme = themeInfo);
+//        themes.add(currentDayTheme = currentTheme = defaultTheme = themeInfo);
+//        themesDict.put("Blue", themeInfo);
+
 
         themeInfo = new ThemeInfo();
         themeInfo.name = "Dark Blue";
@@ -4093,7 +4096,7 @@ public class Theme {
                 new int[]    {                            40,                            40,                            31,                            50,                            25,                            34,                            35,                            50,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
                 );
         themes.add(themeInfo);
-        themesDict.put("Dark Blue", currentNightTheme = themeInfo);
+        themesDict.put("Dark Blue", themeInfo);
 
         themeInfo = new ThemeInfo();
         themeInfo.name = "Arctic Blue";
@@ -4137,6 +4140,7 @@ public class Theme {
         themes.add(themeInfo);
         themesDict.put("Day", themeInfo);
 
+//        blue
         themeInfo = new ThemeInfo();
         themeInfo.name = "Night";
         themeInfo.assetName = "night.attheme";
@@ -4155,7 +4159,7 @@ public class Theme {
                 new int[]    {                            45,                           135,                             0,                           180,                             0,          0,          0,          0,          0,          0,          0,          0,          0,          0 },
                 new int[]    {                            34,                            47,                            52,                            48,                            54,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
                 );
-        themes.add(themeInfo);
+        themes.add(currentNightTheme = currentTheme = defaultTheme = themeInfo);
         themesDict.put("Night", themeInfo);
 
         String themesString = themeConfig.getString("themes2", null);

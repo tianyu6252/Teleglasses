@@ -1,0 +1,15 @@
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/webp.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/flac.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/mozjpeg.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/tgnet.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/rlottie.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/sqlite.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/lz4.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/tgcalls_tp.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/tgvoip.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/tgcalls.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/voipandroid.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/cpufeatures.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/tmessages.36.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/edit_cache.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/x64_SDK23Release/x86_64/CMakeFiles/rebuild_cache.dir

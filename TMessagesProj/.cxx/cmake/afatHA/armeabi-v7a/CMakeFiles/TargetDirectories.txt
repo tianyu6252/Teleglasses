@@ -1,0 +1,15 @@
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/webp.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/flac.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/mozjpeg.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/tgnet.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/rlottie.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/sqlite.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/lz4.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/tgcalls_tp.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/tgvoip.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/tgcalls.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/voipandroid.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/cpufeatures.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/tmessages.36.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/AndroidStudioNUS/Telegram/TMessagesProj/.cxx/cmake/afatHA/armeabi-v7a/CMakeFiles/rebuild_cache.dir

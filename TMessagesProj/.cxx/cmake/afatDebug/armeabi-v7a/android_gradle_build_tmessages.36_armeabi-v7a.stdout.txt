@@ -1,0 +1,2 @@
+ninja: Entering directory `D:\AndroidStudioNUS\Telegram\TMessagesProj\.cxx\cmake\afatDebug\armeabi-v7a'
+ninja: no work to do.

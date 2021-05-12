@@ -175,7 +175,14 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter {
     public TLRPC.Document getPreloadedSticker() {
         return onlineContacts != null && !preloadedStickers.isEmpty() ? preloadedStickers.get(Utilities.random.nextInt(preloadedStickers.size())) : null;
     }
-
+    /**get dialogs num**/
+    public int getDialogsCount() {
+        MessagesController messagesController = MessagesController.getInstance(currentAccount);
+        ArrayList<TLRPC.Dialog> array = parentFragment.getDialogsArray(currentAccount, dialogsType, folderId, dialogsListFrozen);
+        dialogsCount = array.size();
+        int num = dialogsCount;
+        return num;
+    }
     @Override
     public int getItemCount() {
         MessagesController messagesController = MessagesController.getInstance(currentAccount);

@@ -1,0 +1,105 @@
+{
+  "buildFiles": [
+    "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\jni\\CMakeLists.txt",
+    "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\build\\cmake\\android.toolchain.cmake",
+    "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\build\\cmake\\platforms.cmake",
+    "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\jni\\voip\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "webp-Release-arm64-v8a": {
+      "artifactName": "webp",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" webp",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libwebp.a",
+      "runtimeFiles": []
+    },
+    "lz4-Release-arm64-v8a": {
+      "artifactName": "lz4",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" lz4",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\liblz4.a",
+      "runtimeFiles": []
+    },
+    "sqlite-Release-arm64-v8a": {
+      "artifactName": "sqlite",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" sqlite",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libsqlite.a",
+      "runtimeFiles": []
+    },
+    "tgnet-Release-arm64-v8a": {
+      "artifactName": "tgnet",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" tgnet",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libtgnet.a",
+      "runtimeFiles": []
+    },
+    "rlottie-Release-arm64-v8a": {
+      "artifactName": "rlottie",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" rlottie",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\librlottie.a",
+      "runtimeFiles": []
+    },
+    "tgvoip-Release-arm64-v8a": {
+      "artifactName": "tgvoip",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" tgvoip",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libtgvoip.a",
+      "runtimeFiles": []
+    },
+    "cpufeatures-Release-arm64-v8a": {
+      "artifactName": "cpufeatures",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" cpufeatures",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libcpufeatures.a",
+      "runtimeFiles": []
+    },
+    "voipandroid-Release-arm64-v8a": {
+      "artifactName": "voipandroid",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" voipandroid",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libvoipandroid.a",
+      "runtimeFiles": []
+    },
+    "tgcalls-Release-arm64-v8a": {
+      "artifactName": "tgcalls",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" tgcalls",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libtgcalls.a",
+      "runtimeFiles": []
+    },
+    "mozjpeg-Release-arm64-v8a": {
+      "artifactName": "mozjpeg",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" mozjpeg",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libmozjpeg.a",
+      "runtimeFiles": []
+    },
+    "flac-Release-arm64-v8a": {
+      "artifactName": "flac",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" flac",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libflac.a",
+      "runtimeFiles": []
+    },
+    "tgcalls_tp-Release-arm64-v8a": {
+      "artifactName": "tgcalls_tp",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" tgcalls_tp",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\\libtgcalls_tp.a",
+      "runtimeFiles": []
+    },
+    "tmessages.36-Release-arm64-v8a": {
+      "artifactName": "tmessages.36",
+      "buildCommand": "C:\\Users\\Fu Tianyu\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\.cxx\\cmake\\afatHA\\arm64-v8a\" tmessages.36",
+      "abi": "arm64-v8a",
+      "output": "D:\\AndroidStudioNUS\\Telegram\\TMessagesProj\\build\\intermediates\\cmake\\afatHA\\obj\\arm64-v8a\\libtmessages.36.so",
+      "runtimeFiles": []
+    }
+  }
+}

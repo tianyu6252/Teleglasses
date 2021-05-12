@@ -17,7 +17,10 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipDescription;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,6 +39,7 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -49,6 +53,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.util.Property;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -105,6 +110,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.VideoEditedInfo;
+import org.telegram.messenger.VoiceRecorder;
 import org.telegram.messenger.camera.CameraController;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
@@ -120,12 +126,22 @@ import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.GroupStickersActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.StickersActivity;
+import org.telegram.ui.VoiceControl.ChangeRecognized;
+import org.telegram.ui.VoiceControl.SpeechService;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+
+import static android.content.Context.BIND_AUTO_CREATE;
 
 public class ChatActivityEnterView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate {
 
@@ -1526,6 +1542,144 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
         }
     }
 
+
+    /**
+     * Speech service
+     */
+    private static final String TAG = ChatActivityEnterView.class.getName();
+    private ChangeRecognized changeRecognized = new ChangeRecognized();
+    public static boolean startConversation = false;
+    private static String preText = null;
+    private boolean isChatActivitySpeechEnabled = false;
+
+    private final AtomicBoolean speechToVoiceActive = new AtomicBoolean(false);
+    private SpeechService mSpeechService;
+
+    private VoiceRecorder mVoiceRecorder;
+    private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
+        @Override
+        public void onVoiceStart() {
+            if (mSpeechService != null) {
+                System.out.println("TEST 2 on Voice start");
+                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
+            }
+        }
+
+        @Override
+        public void onVoice(byte[] data, int size) {
+            if (mSpeechService != null) {
+                Log.d(TAG, "on Voice");
+                mSpeechService.recognize(data, size);  // [SPEECH_TO_TEXT] recognized
+            }
+        }
+
+        @Override
+        public void onVoiceEnd() {
+            if (mSpeechService != null) {
+                mSpeechService.finishRecognizing(); //FINISH RECOGNISING: TEST 13
+            }
+        }
+    };
+
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mSpeechService = SpeechService.from(binder);
+            mSpeechService.addListener(mSpeechServiceListener);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mSpeechService = null;
+        }
+    };
+
+    private void enableSpeechRecognizer() {
+        Log.d(TAG, "[SPEECH_TO_TEXT] initializing.");
+        // Prepare Cloud Speech API
+        parentActivity.bindService(new Intent(parentActivity, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    private void disableSpeechRecognizer() {
+        Log.d(TAG, "[SPEECH_TO_TEXT] Stopping.");
+        // Stop Cloud Speech API
+        mSpeechService.removeListener(mSpeechServiceListener);
+        parentActivity.unbindService(mServiceConnection);
+        mSpeechService = null;
+    }
+
+    private void startVoiceRecorder() {
+        Log.d(TAG, "[SPEECH] startVoiceRecorder");
+        if (mVoiceRecorder != null) {
+            mVoiceRecorder.stop();
+        }
+        mVoiceRecorder = new VoiceRecorder(mVoiceCallback);
+        mVoiceRecorder.start();
+    }
+
+    private void stopVoiceRecorder() {
+        Log.d(TAG, "[SPEECH] stopVoiceRecorder");
+        if (mVoiceRecorder != null) {
+            mVoiceRecorder.stop();
+            mVoiceRecorder = null;
+        }
+    }
+
+//    private SpeechParser speechParser = new SpeechParser();
+
+    private final SpeechService.Listener mSpeechServiceListener = new SpeechService.Listener() {
+        @Override
+        public void onSpeechRecognized(final String text, final boolean isFinal) {
+            synchronized (this) {
+                if (text != null && isFinal && !text.equals(preText)) {
+
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    LocalDateTime now = LocalDateTime.now();
+                    Log.d(TAG, dtf.format(now));
+
+                    preText = text;
+                    Log.d(TAG, "Previous text: " + preText);
+                    Log.d(TAG, "[SPEECH_TO_TEXT] recognized: " + text + ", final: " + isFinal);
+                    changeRecognized.setSpeechText(text);
+                }
+
+//                if (isFinal && mVoiceRecorder != null) {
+//                    mVoiceRecorder.dismiss(); //API completed.
+//                }
+//                try {
+//                    TimeUnit.SECONDS.sleep(1);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    Log.d(TAG, "Sleep interrupt");
+//                }
+            }
+
+//            if (!TextUtils.isEmpty(text)) {
+//                runOnUiThread(() -> {
+//                    textBox.setText(text);
+//                    if (text != null) {
+//                        String backgroundColor = speechParser.parseCommands(text);
+//                        textBox.setBackgroundColor(Color.parseColor(backgroundColor));
+//                    }
+//
+//                });
+//            }
+        }
+    };
+
+    /**
+     * Showing google speech input dialog
+     */
+//    private void startSpeechInput() {
+//        System.out.println("TESTT 4");
+//        speechToVoiceActive.set(true);
+//    }
+//
+//    private void stopSpeechInput() {
+//        speechToVoiceActive.set(false);
+//    }
+
+    // constructor
     @SuppressLint("ClickableViewAccessibility")
     public ChatActivityEnterView(Activity context, SizeNotifierFrameLayout parent, ChatActivity fragment, final boolean isChat) {
         super(context);
@@ -1595,6 +1749,16 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
         };
         frameLayout.setClipChildren(false);
         textFieldContainer.addView(frameLayout, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1.0f, Gravity.BOTTOM));
+
+        System.out.println("Before chat start choose content: " + DialogsActivity.chooseContact);
+        System.out.println("Before chat start start conversation: " + startConversation);
+        System.out.println("Before chat start isChatActivitySpeechEnabled: " + isChatActivitySpeechEnabled);
+        //Speech Service Initialize
+        if (!isChatActivitySpeechEnabled) {
+            enableSpeechRecognizer(); // [SPEECH_TO_TEXT] initializing
+            startVoiceRecorder(); // [SPEECH] startVoiceRecorder | TEST 1 Start recording audio.
+            isChatActivitySpeechEnabled = true;
+        }
 
         for (int a = 0; a < 2; a++) {
             emojiButton[a] = new ImageView(context) {
@@ -1809,6 +1973,63 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
         messageEditText.setHintTextColor(Theme.getColor(Theme.key_chat_messagePanelHint));
         messageEditText.setCursorColor(Theme.getColor(Theme.key_chat_messagePanelCursor));
         frameLayout.addView(messageEditText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 52, 0, isChat ? 50 : 2, 0));
+
+        /**
+         * set the recognized text here
+         */
+        //set the listener
+        changeRecognized.setListener(new ChangeRecognized.ChangeListener() {
+             @Override
+             public void onChange() {
+//                 Log.d(TAG, "on Speech text change");
+                 String text = changeRecognized.getSpeechText();
+
+                 if(startConversation && !DialogsActivity.chooseContact) {
+                     parentActivity.runOnUiThread(new Runnable() {
+                         @Override
+                         public void run() {
+                             if (text.equals("send")) {
+                                 sendMessage();
+                             }
+                             else if (text.equals("close")) {
+                                 messageEditText.setText("");
+                                 //chat close prompt
+                                 messageEditText.setHintText("Chat closed");
+
+                                 startConversation = false;
+                                 System.out.println("Start conversion: false");
+
+                                 DialogsActivity.chooseContact = true;
+                                 System.out.println("Choose contact: true");
+
+//                                 stopVoiceRecorder();  // [SPEECH] stopVoiceRecorder
+//                                 disableSpeechRecognizer();  // [SPEECH_TO_TEXT] Stopping.
+                             }
+                             else if (text.equals("clear")) {
+                                 messageEditText.setText("");
+                             }
+                             else {
+                                 messageEditText.setText(text);
+                                 System.out.println("Set text: " + text);
+                             }
+                         }
+                     });
+                 }
+                 if (!startConversation && (text.equals("okay") || text.equals("ok"))) {
+                     parentActivity.runOnUiThread(new Runnable() {
+                         @Override
+                         public void run() {
+                             //chat start prompt
+                             messageEditText.setHintText("Chat started");
+
+                             startConversation = true;
+                             System.out.println("Start conversation: true");
+                         }
+                     });
+                 }
+             }
+        });
+
         messageEditText.setOnKeyListener(new OnKeyListener() {
 
             boolean ctrlPressed = false;
@@ -1867,7 +2088,6 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
             }
         });
         messageEditText.addTextChangedListener(new TextWatcher() {
-
             private boolean processChange;
             private boolean nextChangeIsSend;
 
@@ -1977,6 +2197,8 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
                 }
             }
         });
+
+
 
         if (isChat) {
             if (parentFragment != null) {
@@ -2565,7 +2787,7 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
             sendButton.setBackgroundDrawable(Theme.createSelectorDrawable(Color.argb(24, Color.red(color), Color.green(color), Color.blue(color)), 1));
         }
         sendButtonContainer.addView(sendButton, LayoutHelper.createFrame(48, 48));
-        sendButton.setOnClickListener(view -> {
+        sendButton.setOnClickListener((View view) -> {
             if (sendPopupWindow != null && sendPopupWindow.isShowing() || (runningAnimationAudio != null && runningAnimationAudio.isRunning())) {
                 return;
             }
@@ -3317,6 +3539,11 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
     }
 
     public void onDestroy() {
+        Log.d(TAG, "on destroy");
+
+        stopVoiceRecorder();  // [SPEECH] stopVoiceRecorder
+        disableSpeechRecognizer();  // [SPEECH_TO_TEXT] Stopping.
+
         destroyed = true;
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.recordStarted);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.recordStartError);
@@ -3350,6 +3577,8 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
         if (sizeNotifierLayout != null) {
             sizeNotifierLayout.setDelegate(null);
         }
+
+
     }
 
     public void checkChannelRights() {
@@ -3375,6 +3604,8 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
     private Runnable hideKeyboardRunnable;
 
     public void onPause() {
+        Log.d(TAG, "on pause");
+
         isPaused = true;
         if (keyboardVisible) {
             showKeyboardOnResume = true;
@@ -3386,6 +3617,8 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
     }
 
     public void onResume() {
+        Log.d(TAG, "on resume");
+
         isPaused = false;
         if (hideKeyboardRunnable != null) {
             AndroidUtilities.cancelRunOnUIThread(hideKeyboardRunnable);

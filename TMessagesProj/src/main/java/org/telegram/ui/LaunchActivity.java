@@ -149,6 +149,8 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
 
     private static final String EXTRA_ACTION_TOKEN = "actions.fulfillment.extra.ACTION_TOKEN";
 
+
+
     private boolean finished;
     private String videoPath;
     private String sendingText;

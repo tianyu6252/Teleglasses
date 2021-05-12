@@ -137,7 +137,7 @@ public class IntroActivity extends Activity implements NotificationCenter.Notifi
                 textView.layout(x, y - textView.getMeasuredHeight(), x + textView.getMeasuredWidth(), y);
             }
         };
-        frameLayout.setBackgroundColor(0xffffffff);
+        frameLayout.setBackgroundColor(0xff000000);
         scrollView.addView(frameLayout, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
 
         frameLayout2 = new FrameLayout(this);
@@ -248,7 +248,7 @@ public class IntroActivity extends Activity implements NotificationCenter.Notifi
         frameLayout.addView(bottomPages, LayoutHelper.createFrame(66, 5, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 350, 0, 0));
 
         textView = new TextView(this);
-        textView.setTextColor(0xff1393d2);
+        textView.setTextColor(0xff1393d2); //0xff1393d2 blue
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 30, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0, 0, 20));
@@ -408,12 +408,12 @@ public class IntroActivity extends Activity implements NotificationCenter.Notifi
                 }
             };
 
-            headerTextView.setTextColor(0xff212121);
+            headerTextView.setTextColor(0xff212121); //0xff212121 black
             headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
             headerTextView.setGravity(Gravity.CENTER);
             frameLayout.addView(headerTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 18, 244, 18, 0));
 
-            messageTextView.setTextColor(0xff808080);
+            messageTextView.setTextColor(0xff808080); //0xff808080 grey
             messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             messageTextView.setGravity(Gravity.CENTER);
             frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 16, 286, 16, 0));

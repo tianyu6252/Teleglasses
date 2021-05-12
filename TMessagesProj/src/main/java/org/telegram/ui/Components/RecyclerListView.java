@@ -536,6 +536,7 @@ public class RecyclerListView extends RecyclerView {
                         final float y = e.getY();
                         onChildPressed(currentChildView, x, y, true);
                         final View view = currentChildView;
+                        //currentChildPosition = 2;
                         final int position = currentChildPosition;
                         if (instantClick && position != -1) {
                             view.playSoundEffect(SoundEffectConstants.CLICK);
