@@ -37,3 +37,14 @@ You will require Android Studio 3.4, Android NDK rev. 20 and Android SDK 8.1
 ### Localization
 
 We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+
+### Voice control
+The user can choose the dialogs and start conversation with a series of voice commands. Voice commands include:
+1) Speak out the `contact name` to choose one of the dialogs.
+2) `Okay` to start conversation and the hint text will be changed to `chat started`.
+3) Speak out the message one wants to send, which can be sent using `send` command.
+4) `Clear` to clear the message in the text input.
+4) `Close` to finish the current conversation and there would be a `chat closed` prompt.
+
+The speech is transcribed into text with Google Speech-to-Text API. In order to use the API, make sure to download the JSON credentials file from Google Cloud and put the file in the app resources as `app/src/main/res/raw/credential.json`. The main modifications to the original Telegram code are in `org/telegram/ui/DialogsActivity` and `org/telegram/ui/Components/ChatActivityEnterView`.
+
